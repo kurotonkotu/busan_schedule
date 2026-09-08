@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>釜山3泊4日 完全行程表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; background-color: #F7F9FB; color: #1A1A1A; }
+        .serif { font-family: 'Shippori Mincho', serif; }
+        .spot-details { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; opacity: 0; }
+        .spot-card.active .spot-details { max-height: 1200px; opacity: 1; margin-top: 1rem; }
+        .spot-card.active .arrow { transform: rotate(180deg); }
+        .timeline-dot { position: absolute; left: -26px; width: 14px; height: 14px; border-radius: 50%; background: #1D4E89; border: 2px solid #FFF; top: 4px; }
+        .hotel-dot { background: #C5A059; }
+        .prep-details { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; opacity: 0; }
+        .prep-card.active .prep-details { max-height: 2000px; opacity: 1; }
+        .prep-card.active .prep-arrow { transform: rotate(180deg); }
+        .spot-card.current-spot > div:first-of-type + div,
+        .spot-card.current-spot > .flex {
+            border-color: #1D4E89 !important;
+            box-shadow: 0 0 0 2px rgba(29, 78, 137, 0.25);
+        }
+        .spot-card.current-spot::before {
+            content: "現在";
+            position: absolute;
+            top: -10px;
+            left: 8px;
+            background: #1D4E89;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            z-index: 5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .ai-image {
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            object-fit: contain;
+            object-position: center;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 mb-20">
+    <div class="max-w-2xl mx-auto">
+        <header class="mb-10 border-b-2 border-[#1D4E89] pb-6">
+            <h1 class="text-3xl font-bold serif mb-2 text-[#1D4E89]">釜山3泊4日 完全行程表</h1>
+            <p class="text-gray-500 text-sm">釜山・慶州を巡る海辺グルメと歴史の旅</p>
+            <p class="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+                ※ 現在の内容は構造確認用の<span class="font-bold">サンプル行程</span>です。日付・ホテル・費用は確定情報に差し替えてください。
+            </p>
+        </header>
+
+        <section class="mb-10">
+            <div class="prep-card cursor-pointer bg-white border border-gray-200 rounded-lg shadow-sm" onclick="this.classList.toggle('active')">
+                <div class="flex items-center justify-between p-4">
+                    <h2 class="font-bold text-base text-[#1D4E89]">🧳 旅の準備</h2>
+                    <span class="text-gray-400 text-xs prep-arrow transition-transform">▼</span>
+                </div>
+                <div class="prep-details px-4 pb-4 text-sm text-gray-700 leading-relaxed">
+                    <ul class="space-y-3 list-disc pl-5">
+                        <li>
+                            <span class="font-bold">K-ETA（電子渡航認証）の要否確認</span><br>
+                            日本国籍は一時免除措置の対象期間が延長され続けています。出発前に必ず最新の適用状況を公式サイトで確認してください。<br>
+                            <a href="https://www.k-eta.go.kr/" target="_blank" class="text-[#1D4E89] hover:underline break-all">https://www.k-eta.go.kr/</a>
+                        </li>
+                        <li>
+                            <span class="font-bold">e-Arrival Card（入国申告書のWeb事前登録）</span><br>
+                            入国前3日以内に登録しておくと、到着後の記入が不要になり入国審査がスムーズ。<br>
+                            <a href="https://www.e-arrivalcard.go.kr/" target="_blank" class="text-[#1D4E89] hover:underline break-all">https://www.e-arrivalcard.go.kr/</a>
+                        </li>
+                        <li>
+                            <span class="font-bold">日本帰国時の税関申告Web (Visit Japan Web)</span><br>
+                            出発前に帰国予定を登録しておくと、帰国時の税関手続きが早い。<br>
+                            <a href="https://services.digital.go.jp/visit-japan-web/" target="_blank" class="text-[#1D4E89] hover:underline break-all">https://services.digital.go.jp/visit-japan-web/</a>
+                        </li>
+                        <li>
+                            <span class="font-bold">海外SIM / eSIM</span><br>
+                            ahamoや楽天モバイルなど海外でそのまま使えるキャリアなら準備不要。eSIM対応機種なら韓国用の安価なプランが多数あります。
+                        </li>
+                        <li>
+                            <span class="font-bold">交通カード（T-money / Cashbee）</span><br>
+                            釜山の地下鉄・バスで利用可能。コンビニで購入・チャージでき、現金より運賃が安くなります。
+                        </li>
+                        <li>
+                            <span class="font-bold">地図アプリは NAVER Map か KakaoMap</span><br>
+                            韓国ではGoogleマップの経路検索が制限されています。徒歩・地下鉄・バスの案内は現地アプリの方が正確です。
+                        </li>
+                        <li>
+                            <span class="font-bold">両替</span><br>
+                            南浦洞・西面の私設両替所がレート良好。空港での両替は最小限にし、ATMキャッシングも選択肢。
+                        </li>
+                        <li>
+                            <span class="font-bold">スーツケースは機内持ち込みサイズで</span><br>
+                            LCC利用の場合は縦＋横＋高さの合計制限に注意。加えて小さい手荷物1個まで持ち込み可能。
+                        </li>
+                        <li>
+                            <span class="font-bold">パスポートを忘れずに！</span>
+                        </li>
+                        <li>
+                            <span class="font-bold">気温・服装</span><br>
+                            海沿いは風が強く体感温度が下がります。羽織るものを1枚必ず用意。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <div class="mb-6 flex justify-end">
+            <button type="button" id="jump-to-now"
+                    class="px-4 py-2 rounded-full bg-[#1D4E89] text-white text-sm font-bold shadow hover:bg-[#163C6B] transition-colors">
+                現在のスケジュールへジャンプ ⏱
+            </button>
+        </div>
+
+        <div id="itinerary-container" class="space-y-12"></div>
+
+        <section class="mt-12" id="budget-summary">
+            <h2 class="text-xl font-bold text-[#1D4E89] mb-2">旅行中の予算目安（1人あたり）</h2>
+            <p class="text-sm text-gray-600 mb-4">レストラン・観光スポットの現地支払い目安です。航空券・宿泊・KTX（事前会計）と、市内交通・タクシー・ドリンク・お土産代は別途。</p>
+            <div id="budget-summary-content" class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 text-sm text-gray-800"></div>
+        </section>
+
+        <section class="mt-12 pt-10 border-t-2 border-[#1D4E89]" id="prepayment">
+            <h2 class="text-xl font-bold text-[#1D4E89] mb-2">事前会計</h2>
+            <p class="text-sm text-gray-600 mb-4">※ 以下はサンプル値です。確定後の金額に置き換えてください。</p>
+            <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                <table class="w-full text-sm border-collapse min-w-[520px]">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-800">
+                            <th class="border border-gray-200 px-3 py-2 text-left font-bold">項目</th>
+                            <th class="border border-gray-200 px-3 py-2 text-left font-bold">費用</th>
+                            <th class="border border-gray-200 px-3 py-2 text-right font-bold whitespace-nowrap">全員分の合計</th>
+                            <th class="border border-gray-200 px-3 py-2 text-right font-bold whitespace-nowrap">一人部屋の人</th>
+                            <th class="border border-gray-200 px-3 py-2 text-right font-bold whitespace-nowrap">その他みんな</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white text-gray-700">
+                        <tr>
+                            <td class="border border-gray-200 px-3 py-2 align-top font-medium">飛行機</td>
+                            <td class="border border-gray-200 px-3 py-2 align-top whitespace-pre-line">運賃：0×5
+税金・サーチャージ：0×5</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-200 px-3 py-2 align-top font-medium whitespace-pre-line">釜山宿泊
+（ホテル名）</td>
+                            <td class="border border-gray-200 px-3 py-2 align-top whitespace-pre-line">一人部屋：0
+二人部屋：0×2</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                        </tr>
+                        <tr>
+                            <td class="border border-gray-200 px-3 py-2 align-top font-medium whitespace-pre-line">KTX
+釜山〜新慶州（往復）</td>
+                            <td class="border border-gray-200 px-3 py-2 align-top">0×5</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right align-top tabular-nums">0</td>
+                        </tr>
+                        <tr class="bg-[#EEF4FB] font-bold text-gray-900">
+                            <td class="border border-gray-200 px-3 py-2" colspan="2">合計</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right tabular-nums">0</td>
+                            <td class="border border-gray-200 px-3 py-2 text-right tabular-nums">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const TRIP_YEAR = 2026;
+        const THEME_COLOR = "#1D4E89";
+        const PLACEHOLDER_IMG = `data:image/svg+xml;utf8,${encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+                <rect width="320" height="180" fill="#E5EAF1"/>
+                <text x="160" y="94" text-anchor="middle" font-size="14" fill="#7A8AA0" font-family="sans-serif">画像を images/ に追加してください</text>
+            </svg>
+        `)}`;
+
+        const cityCenters = {
+            "釜山": { lat: 35.1587, lng: 129.0559, zoom: 11 },
+            "慶州": { lat: 35.8400, lng: 129.2300, zoom: 11 }
+        };
+        const spotCoordinates = {
+            "金海国際空港": { lat: 35.1795, lng: 128.9382 },
+            "西面": { lat: 35.1577, lng: 129.0594 },
+            "松亭3代クッパ": { lat: 35.1560, lng: 129.0570 },
+            "甘川文化村": { lat: 35.0975, lng: 129.0107 },
+            "白い波の文化村": { lat: 35.0776, lng: 129.0413 },
+            "チャガルチ市場": { lat: 35.0966, lng: 129.0306 },
+            "BIFF広場": { lat: 35.0986, lng: 129.0269 },
+            "国際市場": { lat: 35.1010, lng: 129.0264 },
+            "釜山タワー": { lat: 35.1013, lng: 129.0322 },
+            "海東龍宮寺": { lat: 35.1884, lng: 129.2233 },
+            "海雲台ブルーラインパーク": { lat: 35.1585, lng: 129.1957 },
+            "海雲台市場": { lat: 35.1620, lng: 129.1620 },
+            "海雲台海水浴場": { lat: 35.1587, lng: 129.1604 },
+            "THE BAY 101": { lat: 35.1546, lng: 129.1516 },
+            "広安里海水浴場": { lat: 35.1531, lng: 129.1186 },
+            "広安大橋": { lat: 35.1462, lng: 129.1263 },
+            "釜山駅": { lat: 35.1151, lng: 129.0416 },
+            "新慶州駅": { lat: 35.7955, lng: 129.1300 },
+            "佛国寺": { lat: 35.7900, lng: 129.3320 },
+            "石窟庵": { lat: 35.7947, lng: 129.3494 },
+            "大陵苑": { lat: 35.8383, lng: 129.2100 },
+            "瞻星台": { lat: 35.8347, lng: 129.2190 },
+            "東宮と月池": { lat: 35.8348, lng: 129.2265 },
+            "開琴ミルミョン": { lat: 35.1502, lng: 129.0219 },
+            "ロッテ百貨店 光復店": { lat: 35.0996, lng: 129.0356 }
+        };
+
+        const days = [
+            {
+                date: "Day 1: 10/22 (木) 釜山",
+                spots: [
+                    { time: "11:30", name: "金海国際空港(PUS) 到着", type: "transport", desc: "釜山の空の玄関口。入国後、軽電鉄と地下鉄を乗り継いで市内へ移動します。", img: "images/gimhae_airport.jpg", map: "金海国際空港" },
+                    { time: "12:30", name: "ホテル (荷物預け)", type: "hotel", desc: "西面エリアの拠点ホテル。まずは荷物を預けて身軽に観光をスタート。", img: "images/hotel_seomyeon.jpg", map: "西面" },
+                    { time: "13:30", name: "松亭3代クッパ (デジクッパ)", type: "spot", desc: "釜山名物のデジクッパ（豚肉のスープご飯）の有名店。白濁したスープにアミの塩辛やニラで味を調えながら食べるのが地元流で、旅の一食目にぴったりです。", img: "images/dwaeji_gukbap.jpg", map: "松亭3代クッパ", budget: "9,000〜12,000ウォン", budgetMin: 9000, budgetMax: 12000 },
+                    { time: "15:00", name: "甘川文化村", type: "spot", desc: "山の斜面にカラフルな家々が積み重なる釜山を代表する景観スポット。細い路地にアートや小さなカフェが点在し、写真映えする散策が楽しめます。", img: "images/gamcheon_village.jpg", map: "甘川文化村", budget: "無料（一部体験は有料）", budgetMin: 0, budgetMax: 0 },
+                    { time: "17:00", name: "白い波の文化村 (影島)", type: "spot", desc: "海を見下ろす絶壁沿いの散策路が続くエリア。港と外海を一望でき、夕暮れ時の光が特に美しい穴場的なスポットです。", img: "images/huinnyeoul_village.jpg", map: "白い波の文化村", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "19:00", name: "チャガルチ市場", type: "spot", desc: "韓国最大級の海産物市場。1階で選んだ魚介を2階の食堂で刺身や辛いスープに仕立ててもらう食べ方が定番で、釜山らしい活気を体感できます。", img: "images/jagalchi_market.jpg", map: "チャガルチ市場", budget: "30,000〜50,000ウォン", budgetMin: 30000, budgetMax: 50000 },
+                    { time: "21:00", name: "BIFF広場 (シアッホットク)", type: "spot", desc: "映画祭ゆかりの繁華街。名物の種入りホットクは外はカリッと中は蜜とナッツが溢れ、食べ歩きの締めに最適な一品です。", img: "images/biff_square.jpg", map: "BIFF広場", budget: "2,000〜5,000ウォン", budgetMin: 2000, budgetMax: 5000 },
+                    { time: "22:00", name: "釜山タワー (龍頭山公園)", type: "spot", desc: "市街地の中心に建つ展望タワー。南浦洞から広がる港の夜景を一望でき、初日の締めくくりに街の全体像をつかめます。", img: "images/busan_tower.jpg", map: "釜山タワー", budget: "12,000ウォン", budgetMin: 12000, budgetMax: 12000 },
+                    { time: "23:30", name: "ホテル帰館", type: "hotel", desc: "明日に備えてゆっくりと休息。西面のホテルにて就寝。", img: "images/hotel_seomyeon.jpg", map: "西面" }
+                ]
+            },
+            {
+                date: "Day 2: 10/23 (金) 海雲台・広安里",
+                spots: [
+                    { time: "08:30", name: "ホテル出発", type: "hotel", desc: "海沿いエリアへ1日かけて出かけます。", img: "images/hotel_seomyeon.jpg", map: "西面" },
+                    { time: "09:30", name: "海東龍宮寺", type: "spot", desc: "海に面した断崖に立つ珍しい寺院。波音を聞きながら参拝でき、朝の澄んだ光の中では海と伽藍のコントラストが特に美しく映ります。", img: "images/haedong_yonggungsa.jpg", map: "海東龍宮寺", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "11:30", name: "海雲台ブルーラインパーク", type: "spot", desc: "廃線跡を活用した海岸沿いの観光鉄道。スカイカプセルからは東海の海岸線を間近に眺められ、区間によって景色の表情が変わります。", img: "images/blueline_park.jpg", map: "海雲台ブルーラインパーク", budget: "30,000〜45,000ウォン", budgetMin: 30000, budgetMax: 45000 },
+                    { time: "13:30", name: "海雲台市場", type: "spot", desc: "地元客と観光客が入り混じるアーケード市場。チヂミや天ぷら、カルグクスなどを少しずつ食べ歩きでき、昼食にちょうど良いエリアです。", img: "images/haeundae_market.jpg", map: "海雲台市場", budget: "10,000〜20,000ウォン", budgetMin: 10000, budgetMax: 20000 },
+                    { time: "15:00", name: "海雲台海水浴場 散策", type: "spot", desc: "釜山を象徴する広大なビーチ。高層ビル群と砂浜が並ぶ独特の景観で、波打ち際を歩くだけでもリゾート気分を味わえます。", img: "images/haeundae_beach.jpg", map: "海雲台海水浴場", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "17:00", name: "THE BAY 101", type: "spot", desc: "夜景撮影の名所として知られるウォーターフロント施設。日没後はマリンシティの高層ビルが水面に映り込み、釜山らしい絶景が広がります。", img: "images/thebay101.jpg", map: "THE BAY 101", budget: "10,000〜20,000ウォン（ドリンク）", budgetMin: 10000, budgetMax: 20000 },
+                    { time: "19:00", name: "広安里海水浴場 (夕食)", type: "spot", desc: "広安大橋を正面に望むビーチ沿いのグルメエリア。海鮮や焼肉の店が並び、ライトアップされた橋を眺めながらの食事が楽しめます。", img: "images/gwangalli_beach.jpg", map: "広安里海水浴場", budget: "25,000〜40,000ウォン", budgetMin: 25000, budgetMax: 40000 },
+                    { time: "21:30", name: "広安大橋の夜景バー", type: "spot", desc: "橋の眺めが良いビーチ沿いのバーで一杯。潮風とライトアップを眺めながら、旅の中日をゆったり締めくくります。", img: "images/gwangan_bridge.jpg", map: "広安大橋", budget: "15,000〜25,000ウォン", budgetMin: 15000, budgetMax: 25000 },
+                    { time: "23:00", name: "ホテル帰館", type: "hotel", desc: "西面のホテルへ戻って休息。", img: "images/hotel_seomyeon.jpg", map: "西面" }
+                ]
+            },
+            {
+                date: "Day 3: 10/24 (土) 慶州 日帰り",
+                spots: [
+                    { time: "07:30", name: "ホテル出発", type: "hotel", desc: "釜山駅へ移動し、KTXで慶州へ向かいます。", img: "images/hotel_seomyeon.jpg", map: "西面" },
+                    { time: "08:30", name: "釜山駅 出発 ～ 09:00 新慶州駅 到着", type: "transport", desc: "KTXで約30分。新慶州駅からは市内バスまたはタクシーで観光エリアへ移動します。", img: "images/busan_station.jpg", map: "釜山駅", budget: "11,000ウォン" },
+                    { time: "10:00", name: "佛国寺", type: "spot", desc: "新羅仏教文化の頂点とされる世界遺産の寺院。石段や石塔の造形美が見どころで、秋は境内の紅葉と伽藍の組み合わせが特に印象的です。", img: "images/bulguksa.jpg", map: "佛国寺", budget: "6,000ウォン", budgetMin: 6000, budgetMax: 6000 },
+                    { time: "12:00", name: "石窟庵", type: "spot", desc: "山中の人工石窟に本尊仏を安置した世界遺産。参道からの眺望も良く、静謐な空間の中で新羅の石造技術の高さを間近に感じられます。", img: "images/seokguram.jpg", map: "石窟庵", budget: "6,000ウォン", budgetMin: 6000, budgetMax: 6000 },
+                    { time: "13:30", name: "慶州の韓定食", type: "spot", desc: "小皿料理が並ぶ韓定食で昼食。慶州は伝統的な家庭料理を出す店が多く、旅の中でも落ち着いて食事を楽しめる一食になります。", img: "images/gyeongju_hanjeongsik.jpg", map: "大陵苑", budget: "15,000〜25,000ウォン", budgetMin: 15000, budgetMax: 25000 },
+                    { time: "15:00", name: "大陵苑・瞻星台", type: "spot", desc: "新羅王族の古墳群が芝生の丘のように広がる公園と、東洋最古級の天文台。街中に遺跡が溶け込む慶州らしい風景を歩いて味わえます。", img: "images/daereungwon.jpg", map: "大陵苑", budget: "3,000ウォン", budgetMin: 3000, budgetMax: 3000 },
+                    { time: "17:30", name: "東宮と月池 (雁鴨池)", type: "spot", desc: "夜間ライトアップで知られる新羅の離宮跡。池に映る楼閣の姿が幻想的で、慶州観光のハイライトとして日没前後の訪問がおすすめです。", img: "images/donggung_wolji.jpg", map: "東宮と月池", budget: "3,000ウォン", budgetMin: 3000, budgetMax: 3000 },
+                    { time: "19:30", name: "新慶州駅 出発 ～ 20:00 釜山駅 到着", type: "transport", desc: "KTXで釜山へ戻ります。", img: "images/busan_station.jpg", map: "新慶州駅", budget: "11,000ウォン" },
+                    { time: "21:00", name: "西面で締めの一杯", type: "spot", desc: "釜山最大の繁華街でポチャ（屋台風居酒屋）へ。深夜まで賑わうエリアなので、旅の思い出を語りながら気軽に飲めます。", img: "images/seomyeon_night.jpg", map: "西面", budget: "20,000〜30,000ウォン", budgetMin: 20000, budgetMax: 30000 },
+                    { time: "23:00", name: "ホテル帰館", type: "hotel", desc: "西面のホテルにて休息。", img: "images/hotel_seomyeon.jpg", map: "西面" }
+                ]
+            },
+            {
+                date: "Day 4: 10/25 (日) 釜山〜帰国",
+                spots: [
+                    { time: "08:00", name: "ホテル出発 (チェックアウト)", type: "hotel", desc: "荷物を預け、最終日の朝を市場エリアで過ごします。", img: "images/hotel_seomyeon.jpg", map: "西面" },
+                    { time: "08:30", name: "開琴ミルミョン", type: "spot", desc: "釜山発祥の冷麺「ミルミョン」の老舗。小麦粉主体のコシある麺と、あっさりしながら奥行きのあるスープが朝でも食べやすい一杯です。", img: "images/milmyeon.jpg", map: "開琴ミルミョン", budget: "8,000〜10,000ウォン", budgetMin: 8000, budgetMax: 10000 },
+                    { time: "10:00", name: "国際市場・南浦洞", type: "spot", desc: "衣料品から食品まで揃う釜山最大級の市場エリア。周辺の南浦洞にはコスメショップも多く、お土産をまとめて買うのに便利です。", img: "images/gukje_market.jpg", map: "国際市場", budget: "20,000ウォン〜（お土産次第）", budgetMin: 20000, budgetMax: null },
+                    { time: "11:30", name: "ロッテ百貨店 光復店", type: "spot", desc: "屋上庭園と展望スペースを備えた大型百貨店。食品フロアで韓国海苔やお菓子などの定番土産を効率よく調達できます。", img: "images/lotte_gwangbok.jpg", map: "ロッテ百貨店 光復店", budget: "20,000ウォン〜（お土産次第）", budgetMin: 20000, budgetMax: null },
+                    { time: "13:00", name: "ホテルで荷物ピックアップ", type: "hotel", desc: "荷物を回収し、地下鉄と軽電鉄で金海国際空港へ向かいます。", img: "images/hotel_seomyeon.jpg", map: "西面" },
+                    { time: "15:30", name: "金海国際空港(PUS) 出発", type: "transport", desc: "お土産と最高の思い出を胸に日本へ帰国します。", img: "images/gimhae_airport.jpg", map: "金海国際空港" }
+                ]
+            }
+        ];
+
+        function toggleDay(dayIndex, expand) {
+            const daySection = document.querySelector(`section[data-day-index="${dayIndex}"]`);
+            if (!daySection) return;
+            const cards = daySection.querySelectorAll('.spot-card');
+            cards.forEach((card) => {
+                if (expand) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+        }
+
+        function detectCity(spot) {
+            const text = `${spot.name} ${spot.map}`;
+            if (/(慶州|佛国寺|石窟庵|大陵苑|瞻星台|東宮|月池|新慶州)/.test(text)) return "慶州";
+            if (/(釜山|西面|甘川|影島|白い波|チャガルチ|BIFF|南浦|国際市場|海雲台|広安|龍宮寺|金海|PUS|ブルーライン|BAY|ミルミョン|クッパ|ロッテ)/i.test(text)) return "釜山";
+            return "その他";
+        }
+
+        function getSpotIcon(spot) {
+            const text = `${spot.name} ${spot.map}`;
+            if (spot.type === "hotel") return "🏨";
+            if (spot.type === "transport") {
+                if (/(空港|PUS)/.test(text)) return "✈️";
+                if (/(駅|KTX)/.test(text)) return "🚆";
+                return "🚉";
+            }
+            if (/(クッパ|ミルミョン|市場|ホットク|韓定食|食堂|夕食)/.test(text)) return "🍽️";
+            if (/(村|寺|庵|苑|台|公園|タワー|パーク|百貨店|広場)/.test(text)) return "🗺️";
+            if (/(バー|バル|一杯|BAY|Bar)/i.test(text)) return "🍸";
+            if (/(海水浴場|ビーチ|大橋)/.test(text)) return "🌊";
+            return "📍";
+        }
+
+        function getAwardBadge(spot) {
+            const text = `${spot.name} ${spot.desc}`;
+            const hasMichelin = /ミシュラン|ビブグルマン/i.test(text);
+            if (!hasMichelin) return "";
+            const michelinBadge = `data:image/svg+xml;utf8,${encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="31" fill="#B51E28"/>
+                    <text x="32" y="30" text-anchor="middle" font-size="8" fill="#fff" font-family="Arial, sans-serif" font-weight="700">MICHELIN</text>
+                    <text x="32" y="41" text-anchor="middle" font-size="7" fill="#fff" font-family="Arial, sans-serif">Guide</text>
+                </svg>
+            `)}`;
+            return `<img src="${michelinBadge}" alt="Michelin" style="width:18px;height:18px;border-radius:9999px;display:inline-block;vertical-align:middle;margin-right:6px;">`;
+        }
+
+        function buildCityMaps(day) {
+            const cityGroups = {};
+            day.spots.forEach((spot) => {
+                const city = detectCity(spot);
+                if (!cityGroups[city]) cityGroups[city] = [];
+                cityGroups[city].push(spot);
+            });
+            return Object.entries(cityGroups)
+                .filter(([city]) => city !== "その他")
+                .map(([city, spots]) => ({
+                    city,
+                    spots
+                }));
+        }
+
+        async function geocodeSpot(query, city) {
+            if (spotCoordinates[query]) return spotCoordinates[query];
+            const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(`${query} ${city} 韓国`)}`;
+            try {
+                const res = await fetch(url, { headers: { "Accept-Language": "ja" } });
+                const data = await res.json();
+                if (data && data[0]) {
+                    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                }
+            } catch (_) {}
+            return null;
+        }
+
+        async function renderSpotMap(containerId, city, spots) {
+            const mapEl = document.getElementById(containerId);
+            if (!mapEl) return;
+            const center = cityCenters[city] || cityCenters["釜山"];
+            const map = L.map(containerId).setView([center.lat, center.lng], center.zoom);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const bounds = [];
+            for (let i = 0; i < spots.length; i += 1) {
+                const spot = spots[i];
+                const pos = await geocodeSpot(spot.map, city);
+                if (!pos) continue;
+                const numberedIcon = L.divIcon({
+                    className: "numbered-marker",
+                    html: `<div style="
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 9999px;
+                        background:${THEME_COLOR};
+                        color:#fff;
+                        font-size:12px;
+                        font-weight:700;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border:2px solid #fff;
+                        box-shadow:0 1px 4px rgba(0,0,0,0.3);
+                    ">${i + 1}</div>`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12],
+                    popupAnchor: [0, -12]
+                });
+                const marker = L.marker([pos.lat, pos.lng], { icon: numberedIcon }).addTo(map);
+                marker.bindPopup(`<b>${i + 1}. ${spot.name}</b><br>${spot.map}`);
+                bounds.push([pos.lat, pos.lng]);
+            }
+            if (bounds.length >= 2) {
+                map.fitBounds(bounds, { padding: [28, 28], maxZoom: 14 });
+            } else if (bounds.length === 1) {
+                map.setView(bounds[0], 13);
+            }
+        }
+
+        function render() {
+            const container = document.getElementById('itinerary-container');
+            const mapRenderTasks = [];
+            days.forEach((day, dayIndex) => {
+                const cityMaps = buildCityMaps(day);
+                const dayEl = document.createElement('section');
+                dayEl.setAttribute('data-day-index', dayIndex);
+                dayEl.innerHTML = `<div class="mb-4">
+                    <h2 class="text-xl font-bold bg-[#1A1A1A] text-white px-4 py-2 rounded">${day.date}</h2>
+                    <div class="mt-2 flex gap-2 justify-end">
+                        <button type="button" class="px-3 py-1 rounded bg-[#1D4E89] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+                                onclick="toggleDay(${dayIndex}, true)">すべて開く</button>
+                        <button type="button" class="px-3 py-1 rounded bg-gray-200 text-gray-800 text-xs font-bold hover:bg-gray-300 transition-colors"
+                                onclick="toggleDay(${dayIndex}, false)">すべて閉じる</button>
+                    </div>
+                </div>
+                <div class="relative pl-8 ml-2 border-l-2 border-gray-200 space-y-4">
+                    ${day.spots.map((spot, spotIndex) => `
+                        <div class="relative spot-card cursor-pointer group" id="spot-${dayIndex}-${spotIndex}" data-day-index="${dayIndex}" data-spot-index="${spotIndex}" onclick="this.classList.toggle('active')">
+                            <div class="timeline-dot ${spot.type === 'hotel' ? 'hotel-dot' : ''}"></div>
+                            <div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-gray-100 hover:border-[#1D4E89] transition-colors">
+                                <div class="flex items-center gap-4">
+                                    <span class="text-xs font-bold ${spot.type === 'hotel' ? 'text-amber-600' : 'text-[#1D4E89]'} min-w-[40px]">${spot.time}</span>
+                                    <h3 class="font-bold text-sm text-gray-800">${getAwardBadge(spot)}${getSpotIcon(spot)} ${spot.name}</h3>
+                                </div>
+                                <span class="text-gray-300 text-xs arrow transition-transform">▼</span>
+                            </div>
+                            <div class="spot-details bg-white rounded-lg p-4 shadow-inner border border-gray-100">
+                                ${spot.type !== 'transport' ? `
+                                <img src="${spot.img}" class="ai-image" alt="${spot.name}"
+                                     onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}';">` : ''}
+                                <p class="text-sm text-gray-600 leading-relaxed mb-4">${spot.desc}</p>
+                                ${spot.budget ? `<div class="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900"><span class="font-bold">💰 予算目安 (1人)</span><span>${spot.budget}</span></div>` : ''}
+                                ${spot.ticketImage ? `<p class="mb-4"><a href="${spot.ticketImage}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[#1D4E89] text-sm font-bold hover:underline" onclick="event.stopPropagation()">オンライン予約の確認画面（カウンター提示用）を別タブで開く</a></p>` : ''}
+                                <a href="${spot.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.map)}`}" target="_blank"
+                                   class="block text-center py-2 bg-[#1A1A1A] text-white rounded-lg text-xs font-bold hover:bg-[#1D4E89] transition-colors"
+                                   onclick="event.stopPropagation()">Google Map 📍</a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-5 space-y-4">
+                    ${cityMaps.map((m) => `
+                        <div class="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+                            <h4 class="text-sm font-bold text-gray-800 mb-2">${m.city}の市内マップ</h4>
+                            <div id="map-day-${dayIndex}-${m.city}" class="w-full h-56 rounded border border-gray-200"></div>
+                            <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1">
+                                ${m.spots.map((spot, idx) => `
+                                    <div class="text-xs text-gray-700">
+                                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.map)}" target="_blank"
+                                           class="hover:underline">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#1D4E89] text-white mr-1">${idx + 1}</span>
+                                            ${spot.name}
+                                        </a>
+                                    </div>
+                                `).join("")}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+                container.appendChild(dayEl);
+                cityMaps.forEach((m) => {
+                    mapRenderTasks.push({ id: `map-day-${dayIndex}-${m.city}`, city: m.city, spots: m.spots });
+                });
+            });
+            return mapRenderTasks;
+        }
+
+        async function initializeMaps() {
+            const tasks = render();
+            for (const task of tasks) {
+                await renderSpotMap(task.id, task.city, task.spots);
+            }
+        }
+        initializeMaps();
+
+        function findCurrentSpotIndex() {
+            const now = new Date();
+            let lastBeforeNow = null;
+            for (let d = 0; d < days.length; d += 1) {
+                const day = days[d];
+                const m = day.date.match(/(\d{1,2})\/(\d{1,2})/);
+                if (!m) continue;
+                const month = parseInt(m[1], 10);
+                const dayNum = parseInt(m[2], 10);
+                for (let s = 0; s < day.spots.length; s += 1) {
+                    const spot = day.spots[s];
+                    const t = spot.time.match(/(\d{1,2}):(\d{2})/);
+                    if (!t) continue;
+                    const spotDate = new Date(TRIP_YEAR, month - 1, dayNum, parseInt(t[1], 10), parseInt(t[2], 10), 0, 0);
+                    if (spotDate <= now) {
+                        lastBeforeNow = { dayIndex: d, spotIndex: s };
+                    } else {
+                        if (lastBeforeNow) return lastBeforeNow;
+                        return { dayIndex: d, spotIndex: s };
+                    }
+                }
+            }
+            if (lastBeforeNow) return lastBeforeNow;
+            return { dayIndex: 0, spotIndex: 0 };
+        }
+
+        function jumpToCurrentSpot() {
+            const target = findCurrentSpotIndex();
+            const el = document.getElementById(`spot-${target.dayIndex}-${target.spotIndex}`);
+            if (!el) return;
+            document.querySelectorAll('.spot-card.current-spot').forEach((c) => c.classList.remove('current-spot'));
+            el.classList.add('current-spot');
+            el.classList.add('active');
+            const headerOffset = 80;
+            const rect = el.getBoundingClientRect();
+            window.scrollTo({ top: window.scrollY + rect.top - headerOffset, behavior: 'smooth' });
+        }
+
+        document.getElementById('jump-to-now').addEventListener('click', jumpToCurrentSpot);
+
+        function renderBudgetSummary() {
+            const target = document.getElementById('budget-summary-content');
+            if (!target) return;
+            const KRW_TO_JPY = 0.11;
+            let totalMin = 0;
+            let totalMaxKnown = 0;
+            let hasOpenEnd = false;
+            const dayRows = days.map((day) => {
+                let dayMin = 0;
+                let dayMaxKnown = 0;
+                let dayHasOpen = false;
+                const items = [];
+                day.spots.forEach((spot) => {
+                    if (spot.type !== 'spot' || typeof spot.budgetMin !== 'number') return;
+                    dayMin += spot.budgetMin;
+                    if (typeof spot.budgetMax === 'number') {
+                        dayMaxKnown += spot.budgetMax;
+                    } else {
+                        dayMaxKnown += spot.budgetMin;
+                        dayHasOpen = true;
+                    }
+                    items.push(`<li class="flex justify-between gap-3 py-0.5"><span class="text-gray-700">${spot.name}</span><span class="text-gray-600 tabular-nums whitespace-nowrap">${spot.budget}</span></li>`);
+                });
+                totalMin += dayMin;
+                totalMaxKnown += dayMaxKnown;
+                if (dayHasOpen) hasOpenEnd = true;
+                const dayLabel = day.date;
+                const rangeText = dayMin === dayMaxKnown
+                    ? `${dayMin.toLocaleString()}ウォン${dayHasOpen ? '〜' : ''}`
+                    : `${dayMin.toLocaleString()}〜${dayMaxKnown.toLocaleString()}ウォン${dayHasOpen ? '〜' : ''}`;
+                return `
+                    <div class="border border-gray-100 rounded p-3 bg-gray-50">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-bold text-sm text-gray-800">${dayLabel}</h3>
+                            <span class="text-xs font-bold text-[#1D4E89] tabular-nums">${rangeText}</span>
+                        </div>
+                        <ul class="text-xs space-y-0.5">${items.join('')}</ul>
+                    </div>`;
+            }).join('');
+
+            const totalRange = totalMin === totalMaxKnown
+                ? `${totalMin.toLocaleString()}ウォン${hasOpenEnd ? '〜' : ''}`
+                : `${totalMin.toLocaleString()}〜${totalMaxKnown.toLocaleString()}ウォン${hasOpenEnd ? '〜' : ''}`;
+            const jpyMin = Math.round(totalMin * KRW_TO_JPY).toLocaleString();
+            const jpyMaxKnown = Math.round(totalMaxKnown * KRW_TO_JPY).toLocaleString();
+            const jpyRange = totalMin === totalMaxKnown
+                ? `約 ${jpyMin}円${hasOpenEnd ? '〜' : ''}`
+                : `約 ${jpyMin}〜${jpyMaxKnown}円${hasOpenEnd ? '〜' : ''}`;
+
+            target.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">${dayRows}</div>
+                <div class="border-t border-gray-200 pt-3 flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-base">合計（1人あたり）</span>
+                        <span class="font-bold text-[#1D4E89] text-base tabular-nums">${totalRange}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span>日本円換算（100ウォン ≈ ${Math.round(KRW_TO_JPY * 100)}円）</span>
+                        <span class="tabular-nums">${jpyRange}</span>
+                    </div>
+                    ${hasOpenEnd ? '<p class="text-xs text-gray-500 mt-1">※「〜」表記の項目はお土産・コスメ・カフェなどの購入額により上限なし。</p>' : ''}
+                </div>`;
+        }
+        renderBudgetSummary();
+    </script>
+</body>
+</html>
