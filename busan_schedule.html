@@ -106,6 +106,7 @@
                             ・ナマクチブ：15:00〜17:00休憩（Day 2は必ず昼のうちに）<br>
                             ・太宗台 海女村：天候や休業の影響を受けやすいので、到着前に営業状況を確認<br>
                             ・釜山博物館：日曜は9:00〜18:00（入場は17:00まで）・月曜休館<br>
+                            ・アルテミュージアム釜山：10:00〜20:00（最終入場19:00・年中無休）<br>
                             ・富平カントン夜市：19:30〜24:00（休業情報もあるため公式サイトで要確認）<br>
                             ・ケミジブ西面1番街店：24時間営業なので遅れても対応可
                         </li>
@@ -160,7 +161,7 @@
                     <span class="text-gray-400 text-xs prep-arrow transition-transform">▼</span>
                 </div>
                 <div class="prep-details px-4 pb-4 text-xs text-gray-700 leading-relaxed">
-                    <p class="mb-3">写真はすべてWikimedia Commonsの再利用可能な画像です。料理の写真はその料理ジャンルの一般的な一皿で、掲載店で撮影されたものではありません。</p>
+                    <p class="mb-3">特記のない写真はWikimedia Commonsの再利用可能な画像です。料理の写真はその料理ジャンルの一般的な一皿で、掲載店で撮影されたものではありません。</p>
                     <ul class="space-y-2 list-disc pl-5">
                         <li><span class="font-bold">成田・釜山出発（7C1152 / 7C1153）</span><br>Aero Icarus／CC BY-SA 2.0・<a href="https://commons.wikimedia.org/wiki/File:Jeju_Air_Boeing_737-800;_HL8239@HKG;31.07.2011_614hu_(6053168722).jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Jeju Air Boeing 737-800</a></li>
                         <li><span class="font-bold">金海国際空港(PUS)</span><br>Michiel1972／CC BY-SA 3.0・<a href="https://commons.wikimedia.org/wiki/File:Gimhae_Airport_lightrail_terminal.jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Gimhae Airport lightrail terminal</a></li>
@@ -171,6 +172,7 @@
                         <li><span class="font-bold">クンチプ（夕食）</span><br>James and Winnie Maeng／CC BY 2.0・<a href="https://commons.wikimedia.org/wiki/File:Korean_cuisine-Hanjeongsik-01.jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Korean cuisine-Hanjeongsik-01</a>（韓定食の一例。掲載店で撮影されたものではありません）</li>
                         <li><span class="font-bold">甘川文化村</span><br>bryan...／CC BY-SA 2.0・<a href="https://commons.wikimedia.org/wiki/File:Gamcheon_Culture_Village_Busan_(30809159807).jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Gamcheon Culture Village Busan</a></li>
                         <li><span class="font-bold">釜山博物館</span><br>neepster／CC BY-SA 2.0・<a href="https://commons.wikimedia.org/wiki/File:Busan_Museum.jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Busan Museum</a></li>
+                        <li><span class="font-bold">アルテミュージアム釜山</span><br>提供写真（掲載店・施設で撮影されたものです）</li>
                         <li><span class="font-bold">ケミジブ 西面店</span><br>ayustety／CC BY-SA 2.0・<a href="https://commons.wikimedia.org/wiki/File:Korean.cuisine-Nakjibokkeum-01.jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Korean.cuisine-Nakjibokkeum-01</a></li>
                         <li><span class="font-bold">西面 夜の散策</span><br>Minseong Kim／CC BY-SA 4.0・<a href="https://commons.wikimedia.org/wiki/File:Seomyeon_Street.jpg" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Seomyeon Street</a></li>
                         <li><span class="font-bold">海東龍宮寺</span><br>Londenp／CC BY-SA 3.0・<a href="https://commons.wikimedia.org/wiki/File:Haedong_Yonggungsa_Temple_view_on_sea.JPG" target="_blank" rel="noopener noreferrer" class="text-[#1D4E89] hover:underline break-all">Haedong Yonggungsa Temple view on sea</a></li>
@@ -220,6 +222,7 @@
             "広安大橋": { lat: 35.1462, lng: 129.1263 },
             "五六島スカイウォーク": { lat: 35.1013, lng: 129.1217 },
             "釜山博物館": { lat: 35.1297, lng: 129.0936 },
+            "アルテミュージアム釜山": { lat: 35.0870682, lng: 129.076373 },
             "五六島ナッチポックン": { lat: 35.1336, lng: 129.0924 }
         };
 
@@ -256,8 +259,9 @@
                     { time: "09:00", name: "ホテル出発 → 白瀬文化村", type: "hotel", desc: "影島へタクシー約15分、またはバスで影島大橋経由。今日は影島→南区→西面と市内を南西から北東へ一筆書きします。", img: "images/hotel_noah.jpg", map: "HOTEL NOAH", mapUrl: "https://www.google.com/maps/search/?api=1&query=Hotel+Noah+Busan+Jagalchi" },
                     { time: "09:30", name: "白瀬(フィニョウル)文化村", type: "spot", desc: "影島の断崖沿いに続く海辺の路地村。細い散策路からは南港に停泊する船と松島の海岸線が一望でき、韓国映画のロケ地としても知られます。海側は風が強いので羽織るものを1枚。", img: "images/huinnyeoul_village.jpg", map: "白瀬文化村", mapUrl: "https://www.google.com/maps/search/?api=1&query=흰여울문화마을", budget: "無料", budgetMin: 0, budgetMax: 0 },
                     { time: "11:30", name: "太宗台 海女村（ヘニョチョン）", type: "spot", desc: "影島南端・太宗台の灯台下にある海女さんの屋台群。その日に素潜りで獲ったホヤ・サザエ・ナマコなどを海を見下ろしながら食べられます。白瀬からタクシー約15〜20分。【日曜】屋台形態のため天候・休業の影響を受けやすく、到着前に営業状況を確認。現金が安心です。⚠ このあとも五六島ナッチポックン・ケミジブと食事が続くので、ここではつまみ程度に抑え、食べ過ぎないようにしてください。", img: "images/haenyeochon.jpg", map: "太宗台 海女村", mapUrl: "https://maps.app.goo.gl/zynyj4PW4eY5pAnM6", budget: "15,000〜25,000ウォン", budgetMin: 15000, budgetMax: 25000 },
-                    { time: "14:00", name: "五六島スカイウォーク（任意）", type: "spot", desc: "断崖の先に架かる馬蹄形のガラス床展望橋から、五六島の岩島群を見渡せます。強風時は閉鎖あり。選んだ場合はここからタクシー約15分でナッチポックンへ。釜山博物館とどちらか一方で十分です（両方回ると移動が長くなります）。【日曜の開放時間】9月は夏期時間で9:00〜19:00（入場は終了10分前まで。強風・荒天時は休止）。", img: "images/oryukdo_skywalk.jpg", map: "五六島スカイウォーク", mapUrl: "https://www.google.com/maps/search/?api=1&query=오륙도+스카이워크", budget: "無料", budgetMin: 0, budgetMax: 0 },
-                    { time: "14:00", name: "釜山博物館（任意）", type: "spot", desc: "南区・大淵にある市立博物館。釜山の歴史と文化を無料で見学でき、このあとの五六島ナッチポックンからも近いのが利点です。【日曜の開館時間】9:00〜18:00（入場は17:00まで）。スカイウォークとどちらか一方を選ぶ想定です。", img: "images/busan_museum.jpg", map: "釜山博物館", mapUrl: "https://www.google.com/maps/search/?api=1&query=부산박물관", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "14:00", name: "五六島スカイウォーク（任意）", type: "spot", desc: "断崖の先に架かる馬蹄形のガラス床展望橋から、五六島の岩島群を見渡せます。強風時は閉鎖あり。選んだ場合はここからタクシー約15分でナッチポックンへ。午後の選択肢（スカイウォーク／釜山博物館／アルテミュージアム）はどれか1つで十分です。【日曜の開放時間】9月は夏期時間で9:00〜19:00（入場は終了10分前まで。強風・荒天時は休止）。", img: "images/oryukdo_skywalk.jpg", map: "五六島スカイウォーク", mapUrl: "https://www.google.com/maps/search/?api=1&query=오륙도+스카이워크", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "14:00", name: "釜山博物館（任意）", type: "spot", desc: "南区・大淵にある市立博物館。釜山の歴史と文化を無料で見学でき、このあとの五六島ナッチポックンからも近いのが利点です。【日曜の開館時間】9:00〜18:00（入場は17:00まで）。午後の選択肢はどれか1つを選ぶ想定です。", img: "images/busan_museum.jpg", map: "釜山博物館", mapUrl: "https://www.google.com/maps/search/?api=1&query=부산박물관", budget: "無料", budgetMin: 0, budgetMax: 0 },
+                    { time: "14:00", name: "アルテミュージアム釜山（任意）", type: "spot", desc: "影島にあるイマーシブ・メディアアート展示館。巨大スクリーンの映像と音・香りに包まれる空間で、釜山の自然をテーマにした作品も多いです。観覧はおおむね60〜90分。海女村からタクシー約15〜20分、その後ナッチポックンへはタクシー約20〜25分。【日曜の開館時間】10:00〜20:00（最終入場19:00・年中無休）。週末の大人料金は約22,000〜25,000ウォン（公式サイトで要確認）。午後の選択肢はどれか1つで十分です。", img: "images/arte_museum_busan.jpg", map: "アルテミュージアム釜山", mapUrl: "https://maps.app.goo.gl/QHoa3JLqxjWrxjfj7", budget: "22,000〜25,000ウォン", budgetMin: 22000, budgetMax: 25000 },
                     { time: "17:00", name: "五六島ナッチポックン（오륙도낙지볶음）", type: "spot", desc: "南区大淵洞の路地にある地元密着のナッチポックン（テナガダコの辛炒め）専門店。『孤独のグルメ』でも取り上げられ、〆の卵チャーハンまで含めた組み立てが評判です。地下鉄2号線大淵駅から徒歩5分。【日曜の営業時間】10:00〜22:00。⚠ 海女村のあとにケミジブもあるので、ここでは1人分をシェアする／〆を省くなど、ボリュームを抑えてください。", img: "images/oryukdo_nakji.jpg", map: "五六島ナッチポックン", mapUrl: "https://www.google.com/maps/search/?api=1&query=오륙도낙지볶음+대연동", budget: "12,000〜20,000ウォン", budgetMin: 12000, budgetMax: 20000 },
                     { time: "19:00", name: "西面 夜の散策", type: "spot", desc: "釜山最大の繁華街。大淵から地下鉄2号線で西面まで約15分。カフェやコスメ店が深夜まで開いているので、食前のウィンドウショッピングに便利です。", img: "images/seomyeon_night.jpg", map: "西面", budget: "0〜15,000ウォン", budgetMin: 0, budgetMax: 15000 },
                     { time: "20:00", name: "ケミジブ 西面店（개미집）", type: "spot", desc: "釜山名物ナッコプセ（テナガダコ・ホルモン・エビの辛炒め鍋）の元祖として知られる老舗。〆はチーズポックンパかキムチマリククスが定番です。【日曜】西面1番街店は24時間営業なので到着が遅れても安心。⚠ 海女村・ナッチポックンと辛い海鮮系が連続するため、すでに満腹ならスキップするか、少なめの注文にしてください。", img: "images/gaemijip.jpg", map: "ケミジブ西面店", mapUrl: "https://www.google.com/maps/search/?api=1&query=개미집+서면", budget: "13,000〜20,000ウォン", budgetMin: 13000, budgetMax: 20000 },
@@ -298,7 +302,7 @@
                 return "その他";
             }
             const text = `${spot.name} ${spot.map}`;
-            if (/(釜山|西面|甘川|影島|白瀬|フィニョウル|太宗|海女|チャガルチ|富平|カントン|BIFF|南浦|広安|龍宮寺|金海|PUS|ナマクチブ|ケミジブ|ナッチポックン|五六島|スカイウォーク|NOAH|ごま油|チャムギルム|クンチプ|博物館)/i.test(text)) return "釜山";
+            if (/(釜山|西面|甘川|影島|白瀬|フィニョウル|太宗|海女|チャガルチ|富平|カントン|BIFF|南浦|広安|龍宮寺|金海|PUS|ナマクチブ|ケミジブ|ナッチポックン|五六島|スカイウォーク|NOAH|ごま油|チャムギルム|クンチプ|博物館|アルテ)/i.test(text)) return "釜山";
             return "その他";
         }
 
@@ -312,7 +316,7 @@
             }
             if (/(クッパ|コムタン|ミルミョン|市場|ホットク|韓定食|定食|食堂|夕食|昼食|海女|ナマクチブ|ケミジブ|ナッチポックン|クンチプ|飲み)/.test(text)) return "🍽️";
             if (/(ごま油|お土産|百貨店)/.test(text)) return "🛍️";
-            if (/(村|寺|庵|苑|台|公園|タワー|パーク|広場|スカイウォーク|博物館)/.test(text)) return "🗺️";
+            if (/(村|寺|庵|苑|台|公園|タワー|パーク|広場|スカイウォーク|博物館|アルテ)/.test(text)) return "🗺️";
             if (/(バー|バル|一杯|BAY|Bar)/i.test(text)) return "🍸";
             if (/(海水浴場|ビーチ|大橋)/.test(text)) return "🌊";
             return "📍";
